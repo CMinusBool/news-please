@@ -494,6 +494,8 @@ class PostgresqlStorage(ExtractedInformationStorage):
                 self.log.info("Moved old version of an article to the archive.")
             except psycopg2.DatabaseError as error:
                 self.log.error("Something went wrong in archive: %s", error)
+        else:
+            self.log.info("Article inserted into the database.")
 
         return item
 
