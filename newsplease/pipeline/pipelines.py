@@ -12,6 +12,7 @@ import pymysql
 import psycopg2
 from dateutil import parser as dateparser
 from elasticsearch import Elasticsearch
+from psycopg2.extras import LoggingConnection
 from scrapy.exceptions import DropItem
 
 from NewsArticle import NewsArticle
@@ -398,7 +399,9 @@ class PostgresqlStorage(ExtractedInformationStorage):
                             port=self.database["port"],
                             database=self.database["database"],
                             user=self.database["user"],
-                            password=self.database["password"])
+                            password=self.database["password"],
+                            connection_factory=LoggingConnection)
+        self.conn.initialize(self.log)
         self.cursor = self.conn.cursor()
 
     def process_item(self, item, spider):
