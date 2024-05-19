@@ -462,7 +462,7 @@ class PostgresqlStorage(ExtractedInformationStorage):
         try:
             self.cursor.execute(self.insert_current, current_version_list)
             self.conn.commit()
-            self.log.info("Article inserted into the database.")
+            self.log.info("Article query successful.")
         except psycopg2.DatabaseError as error:
             self.log.error("Something went wrong in commit: %s", error)
 
@@ -472,7 +472,10 @@ class PostgresqlStorage(ExtractedInformationStorage):
             try:
                 ids = self.cursor.fetchone()
                 if not ids:
+                    self.log.info("Article already exists in the database.")
                     return item
+                else:
+                    self.log.info("Article inserted into the database.")
                 old_version_list['descendant'] = ids[0]
             except psycopg2.DatabaseError as error:
                 self.log.error("Something went wrong in id query: %s", error)
