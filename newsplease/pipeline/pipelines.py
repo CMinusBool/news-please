@@ -369,6 +369,7 @@ class PostgresqlStorage(ExtractedInformationStorage):
                             %(title_rss)s,%(maintext)s,%(description)s, \
                             %(date_publish)s,%(authors)s,%(language)s, \
                             %(ancestor)s,%(descendant)s,%(version)s) \
+                        ON CONFLICT ON CONSTRAINT unique_url_date_publish DO NOTHING \
                         RETURNING id")
 
     insert_archive = ("INSERT INTO ArchiveVersions(id,date_modify,date_download,\
@@ -469,7 +470,10 @@ class PostgresqlStorage(ExtractedInformationStorage):
         if old_version is not None:
             # Set descendant attribute
             try:
-                old_version_list['descendant'] = self.cursor.fetchone()[0]
+                ids = self.cursor.fetchone()
+                if not ids:
+                    return item
+                old_version_list['descendant'] = ids[0]
             except psycopg2.DatabaseError as error:
                 self.log.error("Something went wrong in id query: %s", error)
 
